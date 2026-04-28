@@ -92,3 +92,6 @@ SELECT o.order_id, o.order_date
 FROM `order` o
 JOIN customers ON o.customer_id = c.customer_id
 WHERE c.address = 'TPHCM';
+
+DROP TABLE IF EXISTS Order_Detail;
+DROP TABLE IF EXISTS Orders;

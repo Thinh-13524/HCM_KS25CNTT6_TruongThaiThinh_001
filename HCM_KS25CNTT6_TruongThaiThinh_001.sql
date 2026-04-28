@@ -12,6 +12,7 @@ CREATE TABLE customers (
 CREATE TABLE products (
 	product_id INT PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
+    manufactuer VARCHAR(100),
     price DECIMAL(15 ,2) NOT NULL,
     stock_quantity INT DEFAULT 0
 );
@@ -34,54 +35,60 @@ CREATE TABLE order_details (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
+ALTER TABLE `orders`
+ADD note TEXT;
+
+ALTER TABLE products
+CHANGE manufactuer nha_san_xuat VARCHAR(100);
+
 INSERT INTO customers VALUES 
-(1, 'Nguyễn Văn A','nguyenvana@gmail.com','098123456','HCM'),
-(2, 'Nguyễn Văn B','nguyenvanb@gmail.com','098223456','Đà Nẵng'),
-(3, 'Nguyễn Văn C','nguyenvanc@gmail.com','098323456','Hà Nội'),
-(4, 'Nguyễn Văn D','nguyenvand@gmail.com','098423456','Thanh Hóa'),
-(5, 'Nguyễn Văn E','nguyenvane@gmail.com','098523456','Bình Thuận');
+('C01', 'Nguyễn Văn A','nguyenvana@gmail.com','098123456','TPHCM'),
+('C02', 'Nguyễn Văn B','nguyenvanb@gmail.com',NULL,'HN'),
+('C03', 'Nguyễn Văn C','nguyenvanc@gmail.com','098323456','TPHCM'),
+('C04', 'Nguyễn Văn D','nguyenvand@gmail.com','098423456','DN'),
+('C05', 'Nguyễn Văn E','nguyenvane@gmail.com',NULL,'TPHCM');
 
 INSERT INTO products VALUES
-(1,'iPhone 18 ProMax', 30000000, 15),
-(2,'MacBook Air M2', 45000000, 8),
-(3,'iPhone 15 Mini', 25000000, 20),
-(4,'Samsung 20 untra', 500000, 50),
-(5,'Laptop acer nitro V', 1000000, 0);
+('P01','iPhone 18 ProMax', 30000000, 15),
+('P02','MacBook Air M2', 45000000, 8),
+('P03','iPhone 15 Mini', 25000000, 20),
+('P04','Samsung 20 untra', 500000, 50),
+('P05','Laptop acer nitro V', 1000000, 0);
 
-INSERT INTO orders(order_id, customer_id, order_date) VALUES 
-(101, 1, '2025-10-01'),
-(102, 2, '2025-10-02'),
-(103, 1, '2025-10-05');
+INSERT INTO orders(order_id, order_date, total_amount, customer_id ) VALUES 
+('OR001', '2025-10-01', 30000000, 'C01'),
+('OR002', '2025-10-02', 25000000, 'C03'),
+('OR003', '2025-10-03', 20000000, 'C01'),
+('OR004', '2025-10-04', 15000000, 'C04'),
+('OR005', '2025-10-05', 22000000, 'C03');
 
 INSERT INTO order_details VALUES
-(101, 1, 1, 300000000), 
-(101, 4, 2, 500000),
-(102, 2, 1, 45000000),
-(102, 3, 1, 25000000),
-(103, 3, 2, 25000000),
-(103, 4, 1, 500000);
+('OR001', 'P01', 1, 30000000), 
+('OR001', 'P02', 1, 45000000), 
+('OR002', 'P02', 1, 45000000), 
+('OR003', 'P01', 1, 30000000), 
+('OR004', 'P04', 1, 500000);
 
-SET SQL_SAFE_UPDATES = 0;
+UPDATE products 
+SET nha_san_xuat = 'Apple'
+WHERE product_id IN ('P01','P03');
 
-UPDATE orders o 
-SET total_amount = (SELECT SUM(quantity * unit_price)
-FROM order_details od WHERE od.order_id = o.order_id);
+UPDATE products 
+SET  price = price * 1.1
+WHERE nha_san_xuat = 'Apple';
 
-UPDATE products SET price = price * 1.1 WHERE product_name LIKE '%iPhone%';
-
-UPDATE products SET stock_quantity = stock_quantity - 5 WHERE product_id = 1;
-
-DELETE FROM products WHERE stock_quantity = 0;
+DELETE FROM customer 
+WHERE phone_number IS NULL;
 
 SELECT *
-FROM products  WHERE stock_quantity >10;
+FROM products  
+WHERE price BETWEEN 10000000 AND 20000000;
 
 SELECT *
-FROM orders WHERE total_amount > 500000;
+FROM `orders` 
+WHERE order_id = 'OR001';
 
-SELECT DISTINCT c.full_name, c.email
-FROM customers c
-JOIN orders o ON c.customer_id = o.customer_id 
-JOIN order_details od ON o.order_id = od.order_id
-JOIN products p ON od.product_id = p.product_id
-WHERE p.product_name LIKE '%MacBook Air M2%' ;
+SELECT o.order_id, o.order_date
+FROM `order` o
+JOIN customers ON o.customer_id = c.customer_id
+WHERE c.address = 'TPHCM';

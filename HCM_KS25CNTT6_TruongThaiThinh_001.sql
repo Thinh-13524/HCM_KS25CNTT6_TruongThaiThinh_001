@@ -80,8 +80,8 @@ SELECT *
 FROM orders WHERE total_amount > 500000;
 
 SELECT DISTINCT c.full_name, c.email
-FROM customers as c
-JOIN orders as o ON c.customer_id = o.customer_id 
-JOIN order_details as od ON o.order_id = od.order_id
-JOIN products as p ON od.product_id = p.product_id
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id 
+JOIN order_details od ON o.order_id = od.order_id
+JOIN products p ON od.product_id = p.product_id
 WHERE p.product_name LIKE '%MacBook Air M2%' ;
